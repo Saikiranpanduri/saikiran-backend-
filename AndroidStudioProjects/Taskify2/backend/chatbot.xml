@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Chatbot Response Schema (chatbot.xml)
+
+  Purpose:
+    Defines the structure of XML responses returned by chatbot.php.
+
+  Root Element:
+    <response>
+
+  Children:
+    <status>  — Required. String. One of: "success", "error".
+    <message> — Required. String. Human-readable message for clients to display.
+
+  Examples:
+    Success:
+      <response>
+          <status>success</status>
+          <message>Hello! How can I help you today?</message>
+      </response>
+
+    Error:
+      <response>
+          <status>error</status>
+          <message>Invalid request</message>
+      </response>
+
+  Notes:
+    - Tags must always appear in the same order: <status>, then <message>.
+    - Content is plain text; XML special characters are escaped.
+    - No additional fields are included to maintain strict compatibility with mobile apps.
+    - Future expansion: Add optional tags (e.g., <intent>, <confidence>) only with versioning to avoid breaking clients.
+-->
+<schema name="chatbot_response" version="1.0">
+    <element name="response">
+        <sequence>
+            <element name="status" type="string" enum="success|error" required="true" />
+            <element name="message" type="string" required="true" />
+        </sequence>
+    </element>
+</schema>
+
+

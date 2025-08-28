@@ -1,0 +1,38 @@
+[
+    {
+        "id": "task_68a96bf96d555",
+        "title": "Complete Android App",
+        "description": "Finish the Taskify Android application development",
+        "startDate": "2025-08-23",
+        "endDate": "2025-08-30",
+        "startTime": "09:00",
+        "endTime": "17:00",
+        "completed": true,
+        "createdAt": "2025-08-23 09:21:29",
+        "updatedAt": "2025-08-28 05:53:29"
+    },
+    {
+        "id": "task_68a96bf96dcf8",
+        "title": "Test API Integration",
+        "description": "Test all API endpoints and ensure proper integration",
+        "startDate": "2025-08-23",
+        "endDate": "2025-08-26",
+        "startTime": "10:00",
+        "endTime": "16:00",
+        "completed": true,
+        "createdAt": "2025-08-21 09:21:29",
+        "updatedAt": "2025-08-28 05:53:26"
+    },
+    {
+        "id": "task_68a96bf96dd06",
+        "title": "Design UI\/UX",
+        "description": "Create beautiful and intuitive user interface design",
+        "startDate": "2025-08-24",
+        "endDate": "2025-08-28",
+        "startTime": "14:00",
+        "endTime": "18:00",
+        "completed": false,
+        "createdAt": "2025-08-23 09:21:29",
+        "updatedAt": "2025-08-23 09:21:29"
+    }
+]

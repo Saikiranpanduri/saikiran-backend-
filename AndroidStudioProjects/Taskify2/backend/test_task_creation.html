@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Task Creation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 10px 0; }
+        label { display: inline-block; width: 120px; }
+        input, textarea { width: 200px; padding: 5px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .response { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h2>Test Task Creation API</h2>
+    
+    <form id="taskForm">
+        <div class="form-group">
+            <label>Title:</label>
+            <input type="text" id="title" value="Test Task" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Description:</label>
+            <textarea id="description" rows="3">This is a test task</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Start Date:</label>
+            <input type="date" id="startDate" required>
+        </div>
+        
+        <div class="form-group">
+            <label>End Date:</label>
+            <input type="date" id="endDate" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Start Time:</label>
+            <input type="time" id="startTime" value="10:00" required>
+        </div>
+        
+        <div class="form-group">
+            <label>End Time:</label>
+            <input type="time" id="endTime" value="11:00" required>
+        </div>
+        
+        <button type="submit">Create Task</button>
+    </form>
+    
+    <div class="response" id="response" style="display: none;">
+        <h3>Response:</h3>
+        <pre id="responseText"></pre>
+    </div>
+
+    <script>
+        // Set default dates (tomorrow)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('startDate').value = tomorrow.toISOString().split('T')[0];
+        document.getElementById('endDate').value = tomorrow.toISOString().split('T')[0];
+        
+        document.getElementById('taskForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value
+            };
+            
+            try {
+                const response = await fetch('create_task.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.text();
+                
+                document.getElementById('responseText').textContent = result;
+                document.getElementById('response').style.display = 'block';
+                
+                console.log('Response:', result);
+                
+            } catch (error) {
+                document.getElementById('responseText').textContent = 'Error: ' + error.message;
+                document.getElementById('response').style.display = 'block';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
