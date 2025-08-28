@@ -1,16 +1,15 @@
 <?php
-
 include 'dbconn.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Read raw JSON
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    $name = isset($_POST["name"]) ? $_POST["name"] : "";
-    $email = isset($_POST["email"]) ? $_POST["email"] : "";
-    $password = isset($_POST["password"]) ? $_POST["password"] : "";
+    $name = isset($data["name"]) ? $data["name"] : "";
+    $email = isset($data["email"]) ? $data["email"] : "";
+    $password = isset($data["password"]) ? $data["password"] : "";
 
     if (!empty($email) && !empty($password)) {
-
-        
         $stmt = $conn->prepare("INSERT INTO auth (name, email, password) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $name, $email, $password);
 
@@ -19,14 +18,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $response = array("status" => "failed", "message" => "Error: " . $stmt->error);
         }
-
-        echo json_encode($response);
         $stmt->close();
-
     } else {
         $response = array("status" => "failed", "message" => "Email and password are required.");
-        echo json_encode($response);
     }
+
+    echo json_encode($response);
 }
 
 $conn->close();

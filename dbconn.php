@@ -4,7 +4,7 @@ $username = "root";
 $password = "";
 $db = "taskify";
 // Create connection
-$conn = new mysqli($servername, $username, $password, $db);
+$conn = new mysqli($servername, $username, $password, $db,3306);
 
 $response = array();
 if ($conn->connect_error) {
@@ -16,3 +16,4 @@ if ($conn->connect_error) {
 }
 $json_response = json_encode($response);
 ?>
+

@@ -1,12 +1,20 @@
 <?php
 include 'dbconn.php';
-
 header('Content-Type: application/json');
 
 $tasks = [];
 
-// Optional query params: id or title
-$id = $_GET['id'] ?? null;
+// Only allow GET requests
+if ($_SERVER["REQUEST_METHOD"] !== "GET") {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Invalid request method. Use GET."
+    ]);
+    exit;
+}
+
+// Read from query params
+$s_no = $_GET['s-no'] ?? null;       // your actual column
 $title = $_GET['title'] ?? null;
 
 $sql = "SELECT * FROM create_tasks";
@@ -15,9 +23,9 @@ $params = [];
 $types = "";
 
 // Dynamic filters
-if ($id !== null) {
-    $conditions[] = "id = ?";
-    $params[] = $id;
+if ($s_no !== null) {
+    $conditions[] = "`s-no` = ?";
+    $params[] = $s_no;
     $types .= "i";
 }
 
@@ -31,6 +39,9 @@ if ($title !== null) {
 if (count($conditions) > 0) {
     $sql .= " WHERE " . implode(" AND ", $conditions);
 }
+
+// Order by latest first
+$sql .= " ORDER BY `s-no` DESC";
 
 $stmt = $conn->prepare($sql);
 

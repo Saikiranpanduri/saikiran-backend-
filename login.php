@@ -1,16 +1,16 @@
 <?php
-
 include 'dbconn.php';
 
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Read raw JSON input
+    $data = json_decode(file_get_contents("php://input"), true);
 
-    $email = isset($_POST["email"]) ? $_POST["email"] : "";
-    $password = isset($_POST["password"]) ? $_POST["password"] : "";
+    $email = isset($data["email"]) ? $data["email"] : "";
+    $password = isset($data["password"]) ? $data["password"] : "";
 
     if (!empty($email) && !empty($password)) {
-
         $stmt = $conn->prepare("SELECT * FROM auth WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result && $result->num_rows === 1) {
             $user = $result->fetch_assoc();
 
-            if ($user['password'] === $password) {
+            if ($user['password'] === $password) { // 🔐 plain-text check (hash recommended)
                 $response = array(
                     "status" => "success",
                     "message" => "Login successful.",
@@ -31,17 +31,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 $response = array("status" => "failed", "message" => "Invalid password.");
             }
-
         } else {
             $response = array("status" => "failed", "message" => "User not found.");
         }
 
         echo json_encode($response);
         $stmt->close();
-
     } else {
         echo json_encode(array("status" => "failed", "message" => "Email and password are required."));
     }
 }
 
 $conn->close();
+?>
