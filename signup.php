@@ -1,26 +1,55 @@
 <?php
-include 'dbconn.php';
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Include database connection
+require_once 'dbconn.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Read raw JSON
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $name = isset($data["name"]) ? $data["name"] : "";
-    $email = isset($data["email"]) ? $data["email"] : "";
+    $name = isset($data["name"]) ? trim($data["name"]) : "";
+    $email = isset($data["email"]) ? trim($data["email"]) : "";
     $password = isset($data["password"]) ? $data["password"] : "";
 
-    if (!empty($email) && !empty($password)) {
-        $stmt = $conn->prepare("INSERT INTO auth (name, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $email, $password);
-
-        if ($stmt->execute()) {
-            $response = array("status" => "success", "message" => "User registered successfully.");
+    if (!empty($email) && !empty($password) && !empty($name)) {
+        // Check if user already exists
+        $checkStmt = $conn->prepare("SELECT `s-no` FROM auth WHERE email = ?");
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $response = array("status" => "failed", "message" => "User with this email already exists.");
         } else {
-            $response = array("status" => "failed", "message" => "Error: " . $stmt->error);
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            
+            $stmt = $conn->prepare("INSERT INTO auth (name, email, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $name, $email, $hashedPassword);
+
+            if ($stmt->execute()) {
+                $userId = $conn->insert_id;
+                $response = array(
+                    "status" => "success", 
+                    "message" => "User registered successfully.",
+                    "data" => array(
+                        "user_id" => $userId,
+                        "name" => $name,
+                        "email" => $email
+                    )
+                );
+            } else {
+                $response = array("status" => "failed", "message" => "Error: " . $stmt->error);
+            }
+            $stmt->close();
         }
-        $stmt->close();
+        $checkStmt->close();
     } else {
-        $response = array("status" => "failed", "message" => "Email and password are required.");
+        $response = array("status" => "failed", "message" => "Name, email and password are required.");
     }
 
     echo json_encode($response);
